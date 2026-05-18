@@ -4,38 +4,22 @@
       <stop offset="0%" stop-color="#1a1e3a"/>
       <stop offset="100%" stop-color="#0d0f1a"/>
     </radialGradient>
+    <clipPath id="pi-clip">
+      <path d="M248.53 404.24L143.11 404.24L143.11 384.15L168.18 384.15L168.18 247.85L143.11 247.85L143.11 227.76L368.89 227.76L368.89 247.85L343.66 247.85L343.66 384.15L368.89 384.15L368.89 404.24L263.14 404.24L263.14 384.15L284.89 384.15L284.89 247.85L226.95 247.85L226.95 384.15L248.53 384.15"/>
+    </clipPath>
   </defs>
 
   <!-- Background -->
   <rect width="512" height="512" fill="url(#bg)"/>
 
-  <!-- π legs in cream, drawn as closed paths with swept feet -->
-  <g fill="#efeae0">
+  <!-- π glyph in cream -->
+  <path d="M248.53 404.24L143.11 404.24L143.11 384.15L168.18 384.15L168.18 247.85L143.11 247.85L143.11 227.76L368.89 227.76L368.89 247.85L343.66 247.85L343.66 384.15L368.89 384.15L368.89 404.24L263.14 404.24L263.14 384.15L284.89 384.15L284.89 247.85L226.95 247.85L226.95 384.15L248.53 384.15" fill="#efeae0"/>
 
-    <!-- Left leg: body + right-side mini serif + left outward foot -->
-    <path d="
-      M 130 240 L 178 240 L 178 356
-      C 178 378 194 394 198 398 L 182 398
-      C 176 392 163 378 163 358 L 150 358
-      C 150 380 130 396 102 400 L 86 400
-      C 66 400 58 386 58 374
-      C 58 358 72 350 90 350
-      L 130 350 Z
-    "/>
-
-    <!-- Right leg: mirror of left -->
-    <path d="
-      M 334 240 L 382 240 L 382 350
-      L 422 350
-      C 440 350 454 358 454 374
-      C 454 386 446 400 426 400 L 410 400
-      C 382 396 362 380 362 358 L 349 358
-      C 349 378 336 392 330 398 L 314 398
-      C 318 394 334 378 334 356 Z
-    "/>
-
-  </g>
-
-  <!-- Crossbar in cyan — sits on top of both legs -->
-  <rect x="90" y="188" width="332" height="56" rx="14" fill="#6dd6e8"/>
+  <!-- Cyan crossbar — clipped to the π shape so it only colours the bar -->
+  <rect
+    x="137.1" y="236.6"
+    width="237.8" height="38.8"
+    fill="#6dd6e8"
+    clip-path="url(#pi-clip)"
+  />
 </svg>
