@@ -1,3 +1,4 @@
+import { useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useStats } from '../hooks/useStats'
 import SpeedTrendChart from '../components/SpeedTrendChart'
@@ -5,6 +6,7 @@ import { CATEGORIES, QUESTION_BANK } from '../data/questionBank'
 import { buildSession } from '../engine/session'
 import { IconArrowRight, IconMoon, IconSun } from '../components/Icons'
 import { useTheme } from '../hooks/useTheme'
+import { downloadBackup, restoreFromFile } from '../lib/backup'
 
 const Q_MAP = Object.fromEntries(QUESTION_BANK.map(q => [q.id, q]))
 
@@ -27,6 +29,30 @@ export default function StatsDashboard() {
   const navigate = useNavigate()
   const { stats, streak, loading } = useStats()
   const { isDark, toggleTheme } = useTheme()
+  const fileRef = useRef(null)
+
+  async function handleExport() {
+    try {
+      const { sessions, attempts } = await downloadBackup()
+      alert(`Backup downloaded · ${sessions} sessions, ${attempts} attempts.`)
+    } catch (e) {
+      alert(`Export failed: ${e.message}`)
+    }
+  }
+
+  async function handleImport(e) {
+    const file = e.target.files?.[0]
+    e.target.value = ''
+    if (!file) return
+    if (!confirm('Importing will replace all current sessions, attempts, and streak. Continue?')) return
+    try {
+      const { sessions, attempts } = await restoreFromFile(file)
+      alert(`Restored ${sessions} sessions and ${attempts} attempts. Reloading…`)
+      window.location.reload()
+    } catch (err) {
+      alert(`Import failed: ${err.message}`)
+    }
+  }
 
   if (loading) {
     return (
@@ -333,6 +359,32 @@ export default function StatsDashboard() {
           </p>
         </div>
       )}
+
+      {/* ── Your data ────────────────────────────────────────────────────── */}
+      <div className="card" style={{ padding: '14px 16px' }}>
+        <div className="flex justify-between items-baseline" style={{ marginBottom: 6 }}>
+          <span style={{ fontSize: 13, fontWeight: 600 }}>Your data</span>
+          <span className="mono" style={{ fontSize: 11, color: 'var(--color-fg-muted)' }}>JSON backup</span>
+        </div>
+        <p style={{ fontSize: 11, color: 'var(--color-fg-muted)', marginBottom: 12, lineHeight: 1.5 }}>
+          Export saves every session to a file. Import replaces local data with a backup — useful when switching devices or before clearing browser storage.
+        </p>
+        <div className="flex" style={{ gap: 8 }}>
+          <button onClick={handleExport} className="btn-ghost" style={{ flex: 1, fontSize: 13 }}>
+            Export
+          </button>
+          <button onClick={() => fileRef.current?.click()} className="btn-ghost" style={{ flex: 1, fontSize: 13 }}>
+            Import
+          </button>
+        </div>
+        <input
+          ref={fileRef}
+          type="file"
+          accept="application/json,.json"
+          style={{ display: 'none' }}
+          onChange={handleImport}
+        />
+      </div>
 
     </div>
   )

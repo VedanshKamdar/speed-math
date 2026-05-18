@@ -57,3 +57,44 @@ export async function setMeta(key, value) {
   const db = await getDB()
   await db.put('meta', { key, value })
 }
+
+export async function exportAllData() {
+  const db = await getDB()
+  const [sessions, attempts, meta] = await Promise.all([
+    db.getAll('sessions'),
+    db.getAll('attempts'),
+    db.getAll('meta'),
+  ])
+  return {
+    app: 'speed-math',
+    version: 1,
+    exportedAt: new Date().toISOString(),
+    sessions,
+    attempts,
+    meta,
+  }
+}
+
+export async function importAllData(data) {
+  if (data?.app !== 'speed-math') {
+    throw new Error('This file is not a Speed Math backup.')
+  }
+  if (!Array.isArray(data.sessions) || !Array.isArray(data.attempts) || !Array.isArray(data.meta)) {
+    throw new Error('Backup file is incomplete or corrupted.')
+  }
+  const db = await getDB()
+  await Promise.all([db.clear('sessions'), db.clear('attempts'), db.clear('meta')])
+
+  const writeAll = async (store, rows) => {
+    const tx = db.transaction(store, 'readwrite')
+    await Promise.all([...rows.map(r => tx.store.put(r)), tx.done])
+  }
+  await writeAll('sessions', data.sessions)
+  await writeAll('attempts', data.attempts)
+  await writeAll('meta', data.meta)
+
+  return {
+    sessions: data.sessions.length,
+    attempts: data.attempts.length,
+  }
+}
