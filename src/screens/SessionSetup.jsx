@@ -41,11 +41,38 @@ export default function SessionSetup() {
   const [duration, setDuration] = useState(600)
   const [count, setCount] = useState(20)
   const [subcategory, setSubcategory] = useState(null)
+  const [customMinutes, setCustomMinutes] = useState('')
+  const [customCount, setCustomCount] = useState('')
+
+  const SPRINT_PRESETS = [300, 600, 900]
+  const COUNT_PRESETS = [10, 20, 30, 50]
 
   function toggleCat(cat) {
     setSelectedCats(prev =>
       prev.includes(cat) ? prev.filter(c => c !== cat) : [...prev, cat]
     )
+  }
+
+  function selectDuration(s) {
+    setDuration(s)
+    setCustomMinutes('')
+  }
+
+  function onCustomMinutes(val) {
+    setCustomMinutes(val)
+    const n = parseInt(val, 10)
+    if (n >= 1 && n <= 99) setDuration(n * 60)
+  }
+
+  function selectCount(n) {
+    setCount(n)
+    setCustomCount('')
+  }
+
+  function onCustomCount(val) {
+    setCustomCount(val)
+    const n = parseInt(val, 10)
+    if (n >= 1 && n <= 617) setCount(n)
   }
 
   async function startSession() {
@@ -88,35 +115,59 @@ export default function SessionSetup() {
 
       {/* Mode-specific picker */}
       {mode === 'sprint' && (
-        <div className="grid grid-cols-3" style={{ gap: 8, marginTop: 18 }}>
-          {[300, 600, 900].map((s) => {
-            const on = duration === s
-            return (
-              <button
-                key={s}
-                onClick={() => setDuration(s)}
-                style={pickerStyle(on)}
-              >
-                <span className="num" style={{ fontSize: 40, lineHeight: 1 }}>{s / 60}</span>
-                <span className="mono" style={pickerLabelStyle}>min</span>
-              </button>
-            )
-          })}
-        </div>
+        <>
+          <div className="grid grid-cols-3" style={{ gap: 8, marginTop: 18 }}>
+            {SPRINT_PRESETS.map((s) => {
+              const on = duration === s && !customMinutes
+              return (
+                <button key={s} onClick={() => selectDuration(s)} style={pickerStyle(on)}>
+                  <span className="num" style={{ fontSize: 40, lineHeight: 1 }}>{s / 60}</span>
+                  <span className="mono" style={pickerLabelStyle}>min</span>
+                </button>
+              )
+            })}
+          </div>
+          <div className="flex items-center" style={{ gap: 10, marginTop: 10 }}>
+            <input
+              type="number"
+              min="1"
+              max="99"
+              placeholder="Custom"
+              value={customMinutes}
+              onChange={(e) => onCustomMinutes(e.target.value)}
+              style={customInputStyle(!!customMinutes)}
+            />
+            <span className="mono" style={{ fontSize: 13, color: 'var(--color-fg-muted)' }}>min</span>
+          </div>
+        </>
       )}
 
       {mode === 'fixed' && (
-        <div className="grid grid-cols-4" style={{ gap: 8, marginTop: 18 }}>
-          {[10, 20, 30, 50].map((n) => {
-            const on = count === n
-            return (
-              <button key={n} onClick={() => setCount(n)} style={pickerStyle(on)}>
-                <span className="num" style={{ fontSize: 32, lineHeight: 1 }}>{n}</span>
-                <span className="mono" style={pickerLabelStyle}>q</span>
-              </button>
-            )
-          })}
-        </div>
+        <>
+          <div className="grid grid-cols-4" style={{ gap: 8, marginTop: 18 }}>
+            {COUNT_PRESETS.map((n) => {
+              const on = count === n && !customCount
+              return (
+                <button key={n} onClick={() => selectCount(n)} style={pickerStyle(on)}>
+                  <span className="num" style={{ fontSize: 32, lineHeight: 1 }}>{n}</span>
+                  <span className="mono" style={pickerLabelStyle}>q</span>
+                </button>
+              )
+            })}
+          </div>
+          <div className="flex items-center" style={{ gap: 10, marginTop: 10 }}>
+            <input
+              type="number"
+              min="1"
+              max="617"
+              placeholder="Custom"
+              value={customCount}
+              onChange={(e) => onCustomCount(e.target.value)}
+              style={customInputStyle(!!customCount)}
+            />
+            <span className="mono" style={{ fontSize: 13, color: 'var(--color-fg-muted)' }}>questions</span>
+          </div>
+        </>
       )}
 
       {mode === 'topic' && (
@@ -189,4 +240,19 @@ const pickerLabelStyle = {
   opacity: 0.7,
   letterSpacing: '0.06em',
   textTransform: 'uppercase',
+}
+
+function customInputStyle(active) {
+  return {
+    width: 100,
+    padding: '10px 14px',
+    borderRadius: 12,
+    border: '1px solid ' + (active ? 'var(--color-fg)' : 'var(--color-line-2)'),
+    background: active ? 'var(--color-fg)' : 'transparent',
+    color: active ? 'var(--color-bg)' : 'var(--color-fg)',
+    fontFamily: 'var(--font-display)',
+    fontSize: 22,
+    outline: 'none',
+    textAlign: 'center',
+  }
 }

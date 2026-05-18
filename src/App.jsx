@@ -20,8 +20,8 @@ function Shell({ children }) {
       style={{
         background: 'var(--color-bg)',
         color: 'var(--color-fg)',
-        // leave room for fixed bottom nav when shown
-        paddingBottom: showNav ? 'calc(56px + env(safe-area-inset-bottom))' : 0,
+        paddingTop: 'env(safe-area-inset-top)',
+        paddingBottom: showNav ? 'calc(56px + env(safe-area-inset-bottom))' : 'env(safe-area-inset-bottom)',
       }}
     >
       <main className="flex-1 flex flex-col">{children}</main>
