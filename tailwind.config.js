@@ -1,11 +1,9 @@
 export default {
   content: ['./index.html', './src/**/*.{js,jsx}'],
   theme: {
-    extend: {
-      colors: {
-        brand: { 900: '#0f0e1a', 800: '#1e1b4b', 700: '#312e81' },
-      },
-    },
+    // Tailwind v4 uses @theme in index.css for tokens.
+    // This config exists so the CLI happily finds content files.
+    extend: {},
   },
   plugins: [],
 }
