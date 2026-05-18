@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import StreakBadge from '../components/StreakBadge'
 import { getMeta } from '../db/index'
 import { IconArrowRight, IconMoon, IconSun, IconChevron } from '../components/Icons'
+import { useTheme } from '../hooks/useTheme'
 
 const MODES = [
   { mode: 'sprint', eyebrow: 'Mode 01', title: 'Sprint',      sub: 'Answer as many as you can before the clock runs out.' },
@@ -26,19 +27,12 @@ function greeting() {
 
 export default function Home() {
   const [streak, setStreak] = useState(0)
-  const [isDark, setIsDark] = useState(() => document.documentElement.dataset.theme !== 'light')
+  const { isDark, toggleTheme } = useTheme()
   const navigate = useNavigate()
 
   useEffect(() => {
     getMeta('streak').then((s) => setStreak(s?.count || 0))
   }, [])
-
-  function toggleTheme() {
-    const next = isDark ? 'light' : 'dark'
-    document.documentElement.dataset.theme = next
-    localStorage.setItem('theme', next)
-    setIsDark(!isDark)
-  }
 
   return (
     <div className="flex flex-col h-full" style={{ padding: '8px 20px 0' }}>

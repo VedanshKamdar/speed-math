@@ -3,7 +3,8 @@ import { useStats } from '../hooks/useStats'
 import SpeedTrendChart from '../components/SpeedTrendChart'
 import { CATEGORIES, QUESTION_BANK } from '../data/questionBank'
 import { buildSession } from '../engine/session'
-import { IconSettings, IconArrowRight } from '../components/Icons'
+import { IconArrowRight, IconMoon, IconSun } from '../components/Icons'
+import { useTheme } from '../hooks/useTheme'
 
 const Q_MAP = Object.fromEntries(QUESTION_BANK.map(q => [q.id, q]))
 
@@ -25,6 +26,7 @@ const CAT_LABEL = {
 export default function StatsDashboard() {
   const navigate = useNavigate()
   const { stats, streak, loading } = useStats()
+  const { isDark, toggleTheme } = useTheme()
 
   if (loading) {
     return (
@@ -109,8 +111,8 @@ export default function StatsDashboard() {
       {/* Header */}
       <header className="flex justify-between items-center">
         <div className="eyebrow" style={{ letterSpacing: '0.08em' }}>Statistics</div>
-        <button className="icon-btn" aria-label="Settings">
-          <IconSettings size={16} />
+        <button className="icon-btn" aria-label="Toggle theme" onClick={toggleTheme}>
+          {isDark ? <IconSun size={18} /> : <IconMoon size={18} />}
         </button>
       </header>
 
