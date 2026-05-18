@@ -38,13 +38,13 @@ export default function SessionSetup() {
   const navigate = useNavigate()
 
   const [selectedCats, setSelectedCats] = useState(CATEGORIES)
-  const [duration, setDuration] = useState(600)
+  const [duration, setDuration] = useState(180)
   const [count, setCount] = useState(20)
   const [subcategory, setSubcategory] = useState(null)
   const [customMinutes, setCustomMinutes] = useState('')
   const [customCount, setCustomCount] = useState('')
 
-  const SPRINT_PRESETS = [300, 600, 900]
+  const SPRINT_PRESETS = [60, 120, 180, 300]
   const COUNT_PRESETS = [10, 20, 30, 50]
 
   function toggleCat(cat) {
@@ -116,7 +116,7 @@ export default function SessionSetup() {
       {/* Mode-specific picker */}
       {mode === 'sprint' && (
         <>
-          <div className="grid grid-cols-3" style={{ gap: 8, marginTop: 18 }}>
+          <div className="grid grid-cols-4" style={{ gap: 8, marginTop: 18 }}>
             {SPRINT_PRESETS.map((s) => {
               const on = duration === s && !customMinutes
               return (
