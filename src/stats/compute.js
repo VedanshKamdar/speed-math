@@ -36,15 +36,17 @@ export function computeStats(attempts, sessions) {
     .sort((a, b) => a.accuracy - b.accuracy)
     .slice(0, 10)
 
-  // Speed trend: average timeTakenMs per session, last 7 sessions
+  // Speed trend: average timeTakenMs per session, last 14 sessions sorted by time
   const bySession = {}
   for (const a of attempts) {
     if (!bySession[a.sessionId]) bySession[a.sessionId] = []
     bySession[a.sessionId].push(a.timeTakenMs)
   }
 
-  const sessionSpeeds = sessions
-    .slice(-7)
+  const sortedSessions = [...sessions].sort((a, b) => (a.startTime || 0) - (b.startTime || 0))
+
+  const sessionSpeeds = sortedSessions
+    .slice(-14)
     .map(s => {
       const times = bySession[s.id] || []
       return {

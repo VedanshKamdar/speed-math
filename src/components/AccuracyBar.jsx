@@ -1,27 +1,43 @@
 const LABELS = {
   tables: 'Tables', squares: 'Squares', cubes: 'Cubes',
-  'powers-base2': 'Base 2', 'powers-base3': 'Base 3',
-  'powers-base4': 'Base 4', 'powers-base5': 'Base 5',
-  'powers-base6': 'Base 6', 'powers-base7': 'Base 7',
-  'powers-base8': 'Base 8', 'powers-base9': 'Base 9',
-  fractions: 'Fractions',
+  'powers-base2': 'Powers · 2', 'powers-base3': 'Powers · 3',
+  'powers-base4': 'Powers · 4', 'powers-base5': 'Powers · 5',
+  'powers-base6': 'Powers · 6', 'powers-base7': 'Powers · 7',
+  'powers-base8': 'Powers · 8', 'powers-base9': 'Powers · 9',
+  fractions: 'Fractions → %',
 }
 
+// Thin horizontal accuracy bar.
+// Tier colors:  ≥80 fg · 50–79 warn · <50 wrong.
 export default function AccuracyBar({ category, accuracy }) {
   const pct = Math.round((accuracy || 0) * 100)
+  const color =
+    pct >= 80 ? 'var(--color-fg)' :
+    pct >= 50 ? 'var(--color-warn)' :
+                'var(--color-wrong)'
   return (
-    <div className="flex items-center gap-3">
-      <span className="text-xs text-gray-400 w-20 shrink-0">{LABELS[category] || category}</span>
-      <div className="flex-1 h-3 bg-brand-700 rounded-full overflow-hidden">
+    <div className="w-full">
+      <div className="flex justify-between items-baseline" style={{ marginBottom: 4 }}>
+        <span style={{ fontSize: 12 }}>{LABELS[category] || category}</span>
+        <span className="mono" style={{ fontSize: 12, color: 'var(--color-fg-muted)' }}>{pct}%</span>
+      </div>
+      <div
+        style={{
+          height: 4,
+          background: 'var(--color-line)',
+          borderRadius: 2,
+          overflow: 'hidden',
+        }}
+      >
         <div
-          className="h-full rounded-full transition-all duration-500"
           style={{
             width: `${pct}%`,
-            backgroundColor: pct >= 80 ? '#22c55e' : pct >= 50 ? '#eab308' : '#ef4444',
+            height: '100%',
+            background: color,
+            transition: 'width 0.6s cubic-bezier(0.2, 0.7, 0.3, 1)',
           }}
         />
       </div>
-      <span className="text-xs text-gray-300 w-10 text-right">{pct}%</span>
     </div>
   )
 }

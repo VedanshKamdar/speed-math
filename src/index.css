@@ -1,7 +1,187 @@
+@import url('https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300..700;1,6..72,300..700&family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+
 @import "tailwindcss";
 
+/* ─────────── Design tokens (Tailwind v4 @theme) ─────────── */
 @theme {
-  --color-brand-900: #0f0e1a;
-  --color-brand-800: #1e1b4b;
-  --color-brand-700: #312e81;
+  /* Palette — Ink (dark) */
+  --color-bg:         #0d0f1a;
+  --color-bg-soft:    #14172a;
+  --color-surface:    #161a2e;
+  --color-surface-2:  #1d2138;
+  --color-line:       rgba(255, 255, 255, 0.08);
+  --color-line-2:     rgba(255, 255, 255, 0.16);
+  --color-fg:         #efeae0;
+  --color-fg-muted:   rgba(239, 234, 224, 0.58);
+  --color-fg-dim:     rgba(239, 234, 224, 0.36);
+  --color-accent:     #6dd6e8;
+  --color-accent-soft: rgba(109, 214, 232, 0.14);
+  --color-correct:    #7eddb1;
+  --color-wrong:      #f29a96;
+  --color-warn:       #f5c97a;
+
+  /* legacy brand-* aliases kept so any stray reference doesn't break */
+  --color-brand-900:  #0d0f1a;
+  --color-brand-800:  #161a2e;
+  --color-brand-700:  #1d2138;
+
+  /* Type */
+  --font-display: 'Newsreader', Charter, Georgia, serif;
+  --font-sans:    'IBM Plex Sans', system-ui, -apple-system, sans-serif;
+  --font-mono:    'IBM Plex Mono', ui-monospace, monospace;
 }
+
+/* ─────────── Light mode overrides ─────────── */
+[data-theme="light"] {
+  --color-bg:          #f5f3ee;
+  --color-bg-soft:     #ede9e2;
+  --color-surface:     #e8e4db;
+  --color-surface-2:   #dcd8cf;
+  --color-line:        rgba(0, 0, 0, 0.07);
+  --color-line-2:      rgba(0, 0, 0, 0.14);
+  --color-fg:          #0d0f1a;
+  --color-fg-muted:    rgba(13, 15, 26, 0.56);
+  --color-fg-dim:      rgba(13, 15, 26, 0.35);
+  --color-accent:      #0a7a8f;
+  --color-accent-soft: rgba(10, 122, 143, 0.12);
+  --color-correct:     #2e7f57;
+  --color-wrong:       #c0402b;
+  --color-warn:        #a06d10;
+}
+
+/* ─────────── Base ─────────── */
+html, body, #root { height: 100%; }
+body {
+  background: var(--color-bg);
+  color: var(--color-fg);
+  font-family: var(--font-sans);
+  font-feature-settings: 'ss01', 'cv11', 'tnum';
+  -webkit-font-smoothing: antialiased;
+  letter-spacing: -0.005em;
+}
+
+/* atmospheric tint at the top of every screen */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background: radial-gradient(120% 60% at 50% 0%,
+    color-mix(in oklab, var(--color-accent) 7%, transparent),
+    transparent 70%);
+}
+#root { position: relative; z-index: 1; }
+
+/* ─────────── Typographic helpers ─────────── */
+.num {
+  font-family: var(--font-display);
+  font-variant-numeric: lining-nums tabular-nums;
+  font-weight: 400;
+  letter-spacing: -0.02em;
+}
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-fg-muted);
+  font-weight: 500;
+}
+.serif {
+  font-family: var(--font-display);
+  font-weight: 400;
+  letter-spacing: -0.015em;
+}
+.mono { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+
+/* ─────────── Reusable patterns ─────────── */
+.card {
+  background: var(--color-surface);
+  border-radius: 18px;
+  border: 1px solid var(--color-line);
+}
+.divider { height: 1px; background: var(--color-line); }
+.icon-btn {
+  width: 36px; height: 36px;
+  border-radius: 18px;
+  border: 1px solid var(--color-line);
+  background: transparent;
+  color: var(--color-fg);
+  display: grid; place-items: center;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+.icon-btn:active { background: var(--color-surface); }
+
+.btn-primary {
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  height: 54px; width: 100%;
+  background: var(--color-fg); color: var(--color-bg);
+  border: none; border-radius: 14px;
+  font-weight: 600; font-size: 15px; letter-spacing: -0.005em;
+  cursor: pointer;
+  transition: opacity 0.15s, transform 0.05s;
+}
+.btn-primary:disabled { opacity: 0.35; cursor: not-allowed; }
+.btn-primary:active:not(:disabled) { transform: scale(0.99); }
+
+.btn-ghost {
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  height: 50px; width: 100%;
+  background: transparent; color: var(--color-fg);
+  border: 1px solid var(--color-line-2); border-radius: 14px;
+  font-weight: 500; font-size: 14px;
+  cursor: pointer;
+}
+.btn-ghost:active { background: var(--color-surface); }
+
+.chip {
+  display: inline-flex; align-items: center;
+  padding: 8px 12px;
+  border-radius: 10px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-line);
+  font-size: 13px; font-weight: 500;
+  color: var(--color-fg-muted);
+  cursor: pointer;
+  transition: all 0.12s;
+}
+.chip.is-on {
+  background: var(--color-fg);
+  color: var(--color-bg);
+  border-color: var(--color-fg);
+}
+
+.pill {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-line);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--color-fg-muted);
+}
+.pill .dot { width: 5px; height: 5px; border-radius: 50%; background: var(--color-accent); }
+
+/* ─────────── Subtle animations ─────────── */
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.fade-up { animation: fade-up 0.4s ease-out both; }
+
+@keyframes pulse-correct {
+  0%, 100% { color: var(--color-fg); }
+  50%      { color: var(--color-correct); }
+}
+@keyframes pulse-wrong {
+  0%, 100% { color: var(--color-fg); }
+  50%      { color: var(--color-wrong); }
+}
+
+@keyframes flash-correct { from { background: color-mix(in oklab, var(--color-correct) 16%, transparent); } to { background: transparent; } }
+@keyframes flash-wrong   { from { background: color-mix(in oklab, var(--color-wrong)   16%, transparent); } to { background: transparent; } }

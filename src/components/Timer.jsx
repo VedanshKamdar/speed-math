@@ -1,5 +1,7 @@
 import { useEffect, useState, useRef } from 'react'
+import { IconClock } from './Icons'
 
+// Same prop signature as before: mode, durationSec, onExpire.
 export default function Timer({ mode, durationSec, onExpire }) {
   const [elapsed, setElapsed] = useState(0)
   const intervalRef = useRef(null)
@@ -22,7 +24,15 @@ export default function Timer({ mode, durationSec, onExpire }) {
   const warning = mode === 'sprint' && display <= 30
 
   return (
-    <span className={`font-mono font-bold text-lg ${warning ? 'text-red-400' : 'text-indigo-300'}`}>
+    <span
+      className="mono inline-flex items-center gap-1.5"
+      style={{
+        color: warning ? 'var(--color-warn)' : 'var(--color-fg-muted)',
+        fontSize: 13,
+        fontWeight: 500,
+      }}
+    >
+      <IconClock size={13} sw={1.5} />
       {mm}:{ss}
     </span>
   )
