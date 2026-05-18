@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { CATEGORIES, TABLE_SUBCATEGORIES } from '../data/questionBank'
 import { buildSession } from '../engine/session'
-import { saveSession } from '../db/index'
+import { saveSession, getAttempts } from '../db/index'
 import { IconArrowLeft, IconArrowRight } from '../components/Icons'
 
 const CATEGORY_LABELS = {
@@ -88,12 +88,15 @@ export default function SessionSetup() {
 
   async function startSession() {
     if (selectedCats.length === 0) return
+    // Load attempts so the engine can weight weak questions higher.
+    const attempts = mode === 'topic' ? [] : await getAttempts()
     const session = buildSession({
       mode,
       categories: selectedCats,
       durationSec: mode === 'sprint' ? duration : null,
       count: mode === 'fixed' ? count : null,
       subcategory: mode === 'topic' ? subcategory : null,
+      attempts,
     })
     await saveSession({
       id: session.id, mode: session.mode, categories: session.categories,
