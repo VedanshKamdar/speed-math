@@ -148,7 +148,7 @@ export default function ActiveSession() {
 
       {/* Answer surface */}
       <div style={{ paddingBottom: 4 }}>
-        {view.format === 'type' && <TypeAnswer onSubmit={submitAnswer} />}
+        {view.format === 'type' && <TypeAnswer key={view.question.id} onSubmit={submitAnswer} />}
         {view.format === 'flashcard' && (
           <Flashcard question={view.question} onRate={submitAnswer} />
         )}

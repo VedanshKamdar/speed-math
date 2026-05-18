@@ -139,7 +139,7 @@ export default function SessionResults() {
 
       <div style={{ flex: 1 }} />
 
-      <div className="flex" style={{ gap: 8, paddingBottom: 16 }}>
+      <div className="flex" style={{ gap: 12, padding: '8px 0 24px' }}>
         <button
           onClick={() => navigate('/session/setup', { state: { mode: session?.mode || 'sprint' } })}
           className="btn-ghost"
