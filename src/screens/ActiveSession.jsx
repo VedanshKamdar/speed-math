@@ -4,7 +4,6 @@ import { useSession } from '../hooks/useSession'
 import { saveAttempts, saveSession, getMeta, setMeta } from '../db/index'
 import { computeNewStreak } from '../engine/streak'
 import TypeAnswer from '../components/TypeAnswer'
-import Flashcard from '../components/Flashcard'
 import MCQOptions from '../components/MCQOptions'
 import FeedbackFlash from '../components/FeedbackFlash'
 import Timer from '../components/Timer'
@@ -149,9 +148,6 @@ export default function ActiveSession() {
       {/* Answer surface */}
       <div style={{ paddingBottom: 4 }}>
         {view.format === 'type' && <TypeAnswer key={view.question.id} onSubmit={submitAnswer} />}
-        {view.format === 'flashcard' && (
-          <Flashcard question={view.question} onRate={submitAnswer} />
-        )}
         {view.format === 'mcq' && (
           <MCQOptions
             options={view.options}

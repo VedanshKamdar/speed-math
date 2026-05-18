@@ -1,12 +1,16 @@
+import { useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
-import { IconClose, IconArrowRight } from '../components/Icons'
+import { QUESTION_BANK } from '../data/questionBank'
+import { IconClose, IconArrowRight, IconChevronDown } from '../components/Icons'
 
 const MODE_NAME = { sprint: 'Sprint', fixed: 'Fixed count', topic: 'Topic drill' }
+const Q_MAP = Object.fromEntries(QUESTION_BANK.map(q => [q.id, q]))
 
 export default function SessionResults() {
   const { state } = useLocation()
   const navigate = useNavigate()
   const { attempts = [], session } = state || {}
+  const [timingOpen, setTimingOpen] = useState(false)
 
   const correct = attempts.filter(a => a.correct).length
   const total = attempts.length
@@ -37,18 +41,19 @@ export default function SessionResults() {
 
   const byQ = {}
   for (const a of attempts) {
-    if (!byQ[a.questionId]) byQ[a.questionId] = { c: 0, t: 0 }
+    if (!byQ[a.questionId]) byQ[a.questionId] = { c: 0, t: 0, wrongAnswer: null }
     byQ[a.questionId].t++
     if (a.correct) byQ[a.questionId].c++
+    else byQ[a.questionId].wrongAnswer = a.userAnswer
   }
   const weakSpots = Object.entries(byQ)
-    .map(([qid, d]) => ({ qid, acc: d.c / d.t }))
+    .map(([qid, d]) => ({ qid, acc: d.c / d.t, wrongAnswer: d.wrongAnswer }))
     .sort((a, b) => a.acc - b.acc)
     .filter(w => w.acc < 1)
     .slice(0, 3)
 
   return (
-    <div className="flex flex-col h-full" style={{ padding: '12px 20px 0' }}>
+    <div className="flex flex-col h-full" style={{ padding: '12px 20px 0', overflow: 'hidden' }}>
       <header className="flex justify-between items-center">
         <button onClick={() => navigate('/')} className="icon-btn" aria-label="Close">
           <IconClose size={16} />
@@ -88,25 +93,33 @@ export default function SessionResults() {
         <div className="card fade-up" style={{ padding: '14px 16px', marginTop: 14 }}>
           <div className="flex justify-between items-baseline">
             <span style={{ fontSize: 13, fontWeight: 600 }}>Weak spots</span>
-            <span className="mono" style={{ fontSize: 11, color: 'var(--color-fg-muted)' }}>
-              this session
-            </span>
+            <span className="mono" style={{ fontSize: 11, color: 'var(--color-fg-muted)' }}>this session</span>
           </div>
-          <ul className="flex flex-col" style={{ marginTop: 10, gap: 8 }}>
-            {weakSpots.map((w) => (
-              <li
-                key={w.qid}
-                className="flex justify-between items-center"
-                style={{ fontSize: 13 }}
-              >
-                <span className="num" style={{ fontSize: 17 }}>
-                  {prettifyQid(w.qid)}
-                </span>
-                <span className="mono" style={{ color: 'var(--color-wrong)' }}>
-                  {Math.round(w.acc * 100)}%
-                </span>
-              </li>
-            ))}
+          <ul className="flex flex-col" style={{ marginTop: 10, gap: 10 }}>
+            {weakSpots.map((w) => {
+              const q = Q_MAP[w.qid]
+              return (
+                <li key={w.qid}>
+                  <div className="flex justify-between items-center">
+                    <span className="num" style={{ fontSize: 17 }}>{prettifyQid(w.qid)}</span>
+                    <span className="mono" style={{ fontSize: 11, color: 'var(--color-wrong)' }}>
+                      {Math.round(w.acc * 100)}%
+                    </span>
+                  </div>
+                  {w.wrongAnswer != null && q && (
+                    <div className="flex items-center" style={{ gap: 6, marginTop: 3 }}>
+                      <span className="mono" style={{ fontSize: 11, color: 'var(--color-wrong)' }}>
+                        You: {String(w.wrongAnswer)}
+                      </span>
+                      <span style={{ fontSize: 10, color: 'var(--color-fg-dim)' }}>→</span>
+                      <span className="mono" style={{ fontSize: 11, color: 'var(--color-correct)' }}>
+                        {q.answerDisplay}
+                      </span>
+                    </div>
+                  )}
+                </li>
+              )
+            })}
           </ul>
         </div>
       )}
@@ -137,7 +150,79 @@ export default function SessionResults() {
         </div>
       )}
 
-      <div style={{ flex: 1 }} />
+      {/* Collapsible per-question timing */}
+      <div className="card" style={{ marginTop: 10 }}>
+        <button
+          onClick={() => setTimingOpen(o => !o)}
+          className="flex justify-between items-center w-full"
+          style={{
+            padding: '13px 16px', background: 'none', border: 'none',
+            color: 'var(--color-fg)', cursor: 'pointer', width: '100%',
+          }}
+        >
+          <span style={{ fontSize: 13, fontWeight: 600 }}>
+            Question breakdown
+          </span>
+          <div className="flex items-center" style={{ gap: 8 }}>
+            <span className="mono" style={{ fontSize: 11, color: 'var(--color-fg-muted)' }}>
+              {attempts.length} q
+            </span>
+            <span style={{
+              display: 'flex', transition: 'transform 0.2s',
+              transform: timingOpen ? 'rotate(180deg)' : 'rotate(0deg)',
+              color: 'var(--color-fg-muted)',
+            }}>
+              <IconChevronDown size={14} />
+            </span>
+          </div>
+        </button>
+
+        {timingOpen && (
+          <ul style={{ borderTop: '1px solid var(--color-line)', padding: '6px 16px 10px' }}>
+            {attempts.map((a, i) => {
+              const q = Q_MAP[a.questionId]
+              return (
+                <li
+                  key={a.id}
+                  className="flex items-center"
+                  style={{
+                    padding: '7px 0',
+                    borderBottom: i < attempts.length - 1 ? '1px solid var(--color-line)' : 'none',
+                    gap: 10,
+                  }}
+                >
+                  {/* Correct indicator */}
+                  <span style={{
+                    width: 6, height: 6, borderRadius: 3, flexShrink: 0,
+                    background: a.correct ? 'var(--color-correct)' : 'var(--color-wrong)',
+                  }} />
+
+                  {/* Prompt */}
+                  <span className="num" style={{ fontSize: 15, flex: 1 }}>
+                    {q?.prompt ?? prettifyQid(a.questionId)}
+                  </span>
+
+                  {/* Wrong: you answered → correct */}
+                  {!a.correct && (
+                    <span className="mono" style={{ fontSize: 11, color: 'var(--color-fg-muted)' }}>
+                      <span style={{ color: 'var(--color-wrong)' }}>{String(a.userAnswer ?? '?')}</span>
+                      {' → '}
+                      <span style={{ color: 'var(--color-correct)' }}>{q?.answerDisplay}</span>
+                    </span>
+                  )}
+
+                  {/* Time */}
+                  <span className="mono" style={{ fontSize: 11, color: 'var(--color-fg-dim)', flexShrink: 0 }}>
+                    {(a.timeTakenMs / 1000).toFixed(1)}s
+                  </span>
+                </li>
+              )
+            })}
+          </ul>
+        )}
+      </div>
+
+      <div style={{ flex: 1, minHeight: 16 }} />
 
       <div className="flex" style={{ gap: 12, padding: '8px 0 24px' }}>
         <button

@@ -35,16 +35,14 @@ export function useSession(session) {
   const submitAnswer = useCallback((userAnswer) => {
     if (!current || state.phase !== 'question') return
     const timeTakenMs = Date.now() - questionStartTime.current
-    // Flashcard is self-rated: the boolean passed by the user IS the result
-    const correct = view.format === 'flashcard'
-      ? Boolean(userAnswer)
-      : checkAnswer(current, userAnswer)
+    const correct = checkAnswer(current, userAnswer)
     const attempt = buildAttempt({
       sessionId: session.id,
       question: current,
       correct,
       timeTakenMs,
       format: view.format,
+      userAnswer,
     })
     dispatch({ type: 'ANSWER', result: correct, attempt })
   }, [current, state.phase, session?.id, view])

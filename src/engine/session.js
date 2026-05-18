@@ -49,7 +49,7 @@ export function checkAnswer(question, userAnswer) {
   return String(userAnswer).trim() === String(correct).trim()
 }
 
-export function buildAttempt({ sessionId, question, correct, timeTakenMs, format }) {
+export function buildAttempt({ sessionId, question, correct, timeTakenMs, format, userAnswer }) {
   return {
     id: crypto.randomUUID(),
     sessionId,
@@ -57,6 +57,7 @@ export function buildAttempt({ sessionId, question, correct, timeTakenMs, format
     category: question.category,
     format,
     correct,
+    userAnswer,
     timeTakenMs,
     date: new Date().toISOString().slice(0, 10),
   }

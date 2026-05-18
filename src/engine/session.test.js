@@ -89,10 +89,10 @@ describe('buildQuestionView', () => {
     expect(view.options).toHaveLength(4)
   })
 
-  it('flashcard format returns no options', () => {
+  it('powers use mcq format with options', () => {
     const q = QUESTION_BANK.find(q => q.category === 'powers-base2')
     const view = buildQuestionView(q, QUESTION_BANK)
-    expect(view.format).toBe('flashcard')
-    expect(view.options).toBeNull()
+    expect(view.format).toBe('mcq')
+    expect(view.options).toHaveLength(4)
   })
 })
