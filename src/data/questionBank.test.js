@@ -2,8 +2,8 @@ import { describe, it, expect } from 'vitest'
 import { QUESTION_BANK, getByCategory, CATEGORY_FORMAT } from './questionBank'
 
 describe('QUESTION_BANK', () => {
-  it('has 733 total questions', () => {
-    expect(QUESTION_BANK).toHaveLength(733)
+  it('has 763 total questions', () => {
+    expect(QUESTION_BANK).toHaveLength(763)
   })
 
   it('has 500 table questions', () => {
@@ -78,6 +78,17 @@ describe('QUESTION_BANK', () => {
     const q = QUESTION_BANK.find(q => q.id === 'pct-7')
     expect(q.answer).toBe(7)
     expect(q.prompt).toBe('14.29% = 1/?')
+  })
+
+  it('has 30 approximation questions', () => {
+    expect(QUESTION_BANK.filter(q => q.category === 'approximation')).toHaveLength(30)
+  })
+
+  it('approximation questions have a tolerance', () => {
+    const q = QUESTION_BANK.find(q => q.id === 'approx-pct-23-478')
+    expect(q.tolerance).toBe(0.05)
+    expect(q.answer).toBeCloseTo(109.94, 2)
+    expect(q.prompt).toBe('23% of 478')
   })
 
   it('all reverse categories use mcq format', () => {

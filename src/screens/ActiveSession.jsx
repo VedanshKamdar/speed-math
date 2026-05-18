@@ -23,6 +23,7 @@ const CATEGORY_LABEL = {
   'log-base6': 'Log · base 6', 'log-base7': 'Log · base 7',
   'log-base8': 'Log · base 8', 'log-base9': 'Log · base 9',
   'pct-to-frac': '% → fraction',
+  'approximation': 'Approximation',
 }
 
 export default function ActiveSession() {
@@ -148,13 +149,15 @@ export default function ActiveSession() {
             fontStyle: 'italic',
           }}
         >
-          = ?
+          {view.format === 'approx' ? '≈ ?' : '= ?'}
         </div>
       </div>
 
       {/* Answer surface */}
       <div style={{ paddingBottom: 4 }}>
-        {view.format === 'type' && <TypeAnswer key={view.question.id} onSubmit={submitAnswer} />}
+        {(view.format === 'type' || view.format === 'approx') && (
+          <TypeAnswer key={view.question.id} onSubmit={submitAnswer} />
+        )}
         {view.format === 'mcq' && (
           <MCQOptions
             options={view.options}

@@ -105,6 +105,11 @@ export function buildQuestionView(question, bank) {
 
 export function checkAnswer(question, userAnswer) {
   const correct = question.answer
+  if (question.tolerance != null && typeof correct === 'number') {
+    const num = Number(userAnswer)
+    if (Number.isNaN(num)) return false
+    return Math.abs(num - correct) <= Math.abs(correct * question.tolerance)
+  }
   if (typeof correct === 'number') {
     return Number(userAnswer) === correct
   }

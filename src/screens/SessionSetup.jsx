@@ -29,6 +29,7 @@ const CATEGORY_LABELS = {
   'log-base8': 'Log · base 8',
   'log-base9': 'Log · base 9',
   'pct-to-frac': '% → fraction',
+  'approximation': 'Approximation',
 }
 
 const MODE_TITLES = {

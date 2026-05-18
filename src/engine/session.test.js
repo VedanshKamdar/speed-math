@@ -97,6 +97,31 @@ describe('buildQuestionView', () => {
   })
 })
 
+describe('checkAnswer with tolerance', () => {
+  it('accepts answers within ±5% of the exact value', async () => {
+    const { checkAnswer } = await import('./session')
+    const q = { answer: 100, tolerance: 0.05 }
+    expect(checkAnswer(q, 100)).toBe(true)
+    expect(checkAnswer(q, 95)).toBe(true)
+    expect(checkAnswer(q, 105)).toBe(true)
+    expect(checkAnswer(q, 94)).toBe(false)
+    expect(checkAnswer(q, 106)).toBe(false)
+  })
+
+  it('rejects non-numeric input for tolerance answers', async () => {
+    const { checkAnswer } = await import('./session')
+    const q = { answer: 100, tolerance: 0.05 }
+    expect(checkAnswer(q, 'abc')).toBe(false)
+  })
+
+  it('still requires exact match when no tolerance is set', async () => {
+    const { checkAnswer } = await import('./session')
+    const q = { answer: 100 }
+    expect(checkAnswer(q, 99)).toBe(false)
+    expect(checkAnswer(q, 100)).toBe(true)
+  })
+})
+
 describe('spaced repetition', () => {
   it('weightForQuestion returns higher weight for lower mastery', async () => {
     const { weightForQuestion } = await import('./session')

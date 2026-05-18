@@ -278,6 +278,12 @@ function prettifyQid(qid) {
   if (s.startsWith('cbrt-')) { const n = parseInt(s.slice(5), 10); return `∛${n * n * n}` }
   if (s.startsWith('log-'))  { const [base, exp] = s.slice(4).split('-'); return `${base}^? = ${Math.pow(+base, +exp)}` }
   if (s.startsWith('pct-'))  return `% = 1/${s.slice(4)}`
+  if (s.startsWith('approx-')) {
+    const [kind, a, b] = s.slice(7).split('-')
+    if (kind === 'pct') return `${a}% of ${b}`
+    if (kind === 'mul') return `${a} × ${b}`
+    if (kind === 'div') return `${a} ÷ ${b}`
+  }
   return qid
 }
 
@@ -289,6 +295,7 @@ function prettifyCat(cat) {
   if (cat === 'square-roots') return 'Square roots'
   if (cat === 'cube-roots')   return 'Cube roots'
   if (cat === 'pct-to-frac')  return '% → fraction'
+  if (cat === 'approximation') return 'Approximation'
   if (cat?.startsWith('powers-base')) return 'Powers · ' + cat.replace('powers-base', '')
   if (cat?.startsWith('log-base'))    return 'Log · base ' + cat.replace('log-base', '')
   return cat

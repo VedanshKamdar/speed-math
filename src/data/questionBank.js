@@ -168,6 +168,64 @@ function generatePctToFrac() {
   })
 }
 
+// ─── Approximation (CAT prep: estimate without exact calc, ±5% accepted) ────
+
+// Hand-picked CAT-style problems. Mix of percent-of, multiply, divide.
+// Each emits id, prompt, exact answer, rounded display, tolerance.
+const APPROXIMATION_SPECS = [
+  // percent of (kind, a, b)  → a% of b
+  ['pct',  17,  245],
+  ['pct',  23,  478],
+  ['pct',  8,   537],
+  ['pct',  62,  184],
+  ['pct',  34,  825],
+  ['pct',  9,   678],
+  ['pct',  19,  384],
+  ['pct',  46,  217],
+  ['pct',  31,  692],
+  ['pct',  7,   1450],
+  // multiply: a × b
+  ['mul',  47,  89],
+  ['mul',  73,  28],
+  ['mul',  152, 38],
+  ['mul',  64,  71],
+  ['mul',  89,  91],
+  ['mul',  126, 47],
+  ['mul',  213, 19],
+  ['mul',  342, 27],
+  ['mul',  56,  124],
+  ['mul',  78,  132],
+  // divide: a ÷ b
+  ['div',  1247, 13],
+  ['div',  893,  17],
+  ['div',  2456, 41],
+  ['div',  5234, 67],
+  ['div',  7892, 89],
+  ['div',  3417, 23],
+  ['div',  1856, 32],
+  ['div',  9876, 73],
+  ['div',  4523, 47],
+  ['div',  6789, 81],
+]
+
+function generateApproximations() {
+  return APPROXIMATION_SPECS.map(([kind, a, b]) => {
+    let exact, prompt
+    if (kind === 'pct') { exact = (a / 100) * b; prompt = `${a}% of ${b}` }
+    if (kind === 'mul') { exact = a * b;         prompt = `${a} × ${b}` }
+    if (kind === 'div') { exact = a / b;         prompt = `${a} ÷ ${b}` }
+    return {
+      id: `approx-${kind}-${a}-${b}`,
+      category: 'approximation',
+      subcategory: kind,
+      prompt,
+      answer: exact,
+      answerDisplay: String(Math.round(exact)),
+      tolerance: 0.05,
+    }
+  })
+}
+
 export const QUESTION_BANK = [
   ...generateTables(),
   ...generateSquares(),
@@ -178,6 +236,7 @@ export const QUESTION_BANK = [
   ...generateCubeRoots(),
   ...generateLogs(),
   ...generatePctToFrac(),
+  ...generateApproximations(),
 ]
 
 export const CATEGORIES = [
@@ -191,6 +250,8 @@ export const CATEGORIES = [
   'log-base2', 'log-base3', 'log-base4', 'log-base5',
   'log-base6', 'log-base7', 'log-base8', 'log-base9',
   'pct-to-frac',
+  // Approximation
+  'approximation',
 ]
 
 export const TABLE_SUBCATEGORIES = ['1-10', '11-20', '21-25']
@@ -220,6 +281,7 @@ export const CATEGORY_FORMAT = {
   'log-base8': 'mcq',
   'log-base9': 'mcq',
   'pct-to-frac': 'mcq',
+  'approximation': 'approx',
 }
 
 export function getByCategory(category, subcategory = null) {
