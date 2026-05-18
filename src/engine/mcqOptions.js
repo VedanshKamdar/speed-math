@@ -46,6 +46,34 @@ function powerDistractors(question, bank) {
   return shuffle(pool).slice(0, 3)
 }
 
+function nearbyIntDistractors(correctN, min, max, span = 3) {
+  const offsets = []
+  for (let d = -span; d <= span; d++) if (d !== 0) offsets.push(d)
+  const candidates = offsets
+    .map(d => correctN + d)
+    .filter(m => m >= min && m <= max)
+    .map(m => ({ value: m, answerDisplay: String(m), correct: false }))
+  return shuffle(candidates).slice(0, 3)
+}
+
+function sqrtDistractors(question) {
+  return nearbyIntDistractors(question.answer, 1, 30, 3)
+}
+
+function cbrtDistractors(question) {
+  return nearbyIntDistractors(question.answer, 1, 15, 3)
+}
+
+function pctToFracDistractors(question) {
+  return nearbyIntDistractors(question.answer, 2, 30, 4)
+}
+
+function logDistractors(question, bank) {
+  const sameBase = bank.filter(q => q.category === question.category && q.id !== question.id)
+  return shuffle(sameBase).slice(0, 3)
+    .map(q => ({ value: q.answer, answerDisplay: q.answerDisplay, correct: false }))
+}
+
 export function generateOptions(question, bank) {
   const correct = {
     value: question.answer,
@@ -54,17 +82,19 @@ export function generateOptions(question, bank) {
   }
 
   let distractors
-  if (question.category === 'squares') distractors = squareDistractors(question, bank)
-  else if (question.category === 'cubes') distractors = cubeDistractors(question, bank)
-  else if (question.category === 'fractions') distractors = fractionDistractors(question, bank)
-  else if (question.category.startsWith('powers-')) distractors = powerDistractors(question, bank)
+  if      (question.category === 'squares')      distractors = squareDistractors(question, bank)
+  else if (question.category === 'cubes')        distractors = cubeDistractors(question, bank)
+  else if (question.category === 'fractions')    distractors = fractionDistractors(question, bank)
+  else if (question.category === 'square-roots') distractors = sqrtDistractors(question)
+  else if (question.category === 'cube-roots')   distractors = cbrtDistractors(question)
+  else if (question.category === 'pct-to-frac')  distractors = pctToFracDistractors(question)
+  else if (question.category.startsWith('powers-'))  distractors = powerDistractors(question, bank)
+  else if (question.category.startsWith('log-base')) distractors = logDistractors(question, bank)
   else {
     const pool = bank.filter(q => q.category === question.category && q.id !== question.id)
     distractors = shuffle(pool).slice(0, 3).map(q => ({ value: q.answer, answerDisplay: q.answerDisplay, correct: false }))
   }
 
-  // Deduplicate distractors against correct answer
   const unique = distractors.filter(d => d.answerDisplay !== correct.answerDisplay).slice(0, 3)
-
   return shuffle([correct, ...unique])
 }

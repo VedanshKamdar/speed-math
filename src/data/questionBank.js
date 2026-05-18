@@ -53,19 +53,20 @@ function generateCubes() {
   })
 }
 
+const POWER_CONFIGS = [
+  { base: 2, max: 15 },
+  { base: 3, max: 8 },
+  { base: 4, max: 6 },
+  { base: 5, max: 5 },
+  { base: 6, max: 4 },
+  { base: 7, max: 4 },
+  { base: 8, max: 4 },
+  { base: 9, max: 4 },
+]
+
 function generatePowers() {
-  const configs = [
-    { base: 2, max: 15 },
-    { base: 3, max: 8 },
-    { base: 4, max: 6 },
-    { base: 5, max: 5 },
-    { base: 6, max: 4 },
-    { base: 7, max: 4 },
-    { base: 8, max: 4 },
-    { base: 9, max: 4 },
-  ]
   const qs = []
-  for (const { base, max } of configs) {
+  for (const { base, max } of POWER_CONFIGS) {
     for (let exp = 1; exp <= max; exp++) {
       qs.push({
         id: `pow-${base}-${exp}`,
@@ -81,7 +82,7 @@ function generatePowers() {
 }
 
 // Exact % values rounded to 2 decimal places (100/n)
-const FRACTION_PCT = {
+export const FRACTION_PCT = {
   1:'100%', 2:'50%', 3:'33.33%', 4:'25%', 5:'20%',
   6:'16.67%', 7:'14.29%', 8:'12.5%', 9:'11.11%', 10:'10%',
   11:'9.09%', 12:'8.33%', 13:'7.69%', 14:'7.14%', 15:'6.67%',
@@ -104,19 +105,92 @@ function generateFractions() {
   })
 }
 
+// ─── Reverse questions (CAT prep: tests both directions) ────────────────────
+
+function generateSquareRoots() {
+  return Array.from({ length: 25 }, (_, i) => {
+    const n = i + 1
+    return {
+      id: `sqrt-${n}`,
+      category: 'square-roots',
+      subcategory: null,
+      prompt: `√${n * n}`,
+      answer: n,
+      answerDisplay: String(n),
+    }
+  })
+}
+
+function generateCubeRoots() {
+  return Array.from({ length: 12 }, (_, i) => {
+    const n = i + 1
+    return {
+      id: `cbrt-${n}`,
+      category: 'cube-roots',
+      subcategory: null,
+      prompt: `∛${n * n * n}`,
+      answer: n,
+      answerDisplay: String(n),
+    }
+  })
+}
+
+function generateLogs() {
+  const qs = []
+  for (const { base, max } of POWER_CONFIGS) {
+    for (let exp = 1; exp <= max; exp++) {
+      const result = Math.pow(base, exp)
+      qs.push({
+        id: `log-${base}-${exp}`,
+        category: `log-base${base}`,
+        subcategory: null,
+        prompt: `${base}^? = ${result}`,
+        answer: exp,
+        answerDisplay: String(exp),
+      })
+    }
+  }
+  return qs
+}
+
+function generatePctToFrac() {
+  // Skip n=1 (100% = 1/1 is trivial)
+  return Array.from({ length: 29 }, (_, i) => {
+    const n = i + 2
+    return {
+      id: `pct-${n}`,
+      category: 'pct-to-frac',
+      subcategory: null,
+      prompt: `${FRACTION_PCT[n]} = 1/?`,
+      answer: n,
+      answerDisplay: String(n),
+    }
+  })
+}
+
 export const QUESTION_BANK = [
   ...generateTables(),
   ...generateSquares(),
   ...generateCubes(),
   ...generatePowers(),
   ...generateFractions(),
+  ...generateSquareRoots(),
+  ...generateCubeRoots(),
+  ...generateLogs(),
+  ...generatePctToFrac(),
 ]
 
 export const CATEGORIES = [
+  // Forward
   'tables', 'squares', 'cubes',
   'powers-base2', 'powers-base3', 'powers-base4', 'powers-base5',
   'powers-base6', 'powers-base7', 'powers-base8', 'powers-base9',
   'fractions',
+  // Reverse
+  'square-roots', 'cube-roots',
+  'log-base2', 'log-base3', 'log-base4', 'log-base5',
+  'log-base6', 'log-base7', 'log-base8', 'log-base9',
+  'pct-to-frac',
 ]
 
 export const TABLE_SUBCATEGORIES = ['1-10', '11-20', '21-25']
@@ -135,6 +209,17 @@ export const CATEGORY_FORMAT = {
   'powers-base8': 'mcq',
   'powers-base9': 'mcq',
   fractions: 'mcq',
+  'square-roots': 'mcq',
+  'cube-roots': 'mcq',
+  'log-base2': 'mcq',
+  'log-base3': 'mcq',
+  'log-base4': 'mcq',
+  'log-base5': 'mcq',
+  'log-base6': 'mcq',
+  'log-base7': 'mcq',
+  'log-base8': 'mcq',
+  'log-base9': 'mcq',
+  'pct-to-frac': 'mcq',
 }
 
 export function getByCategory(category, subcategory = null) {

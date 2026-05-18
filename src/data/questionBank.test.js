@@ -2,8 +2,8 @@ import { describe, it, expect } from 'vitest'
 import { QUESTION_BANK, getByCategory, CATEGORY_FORMAT } from './questionBank'
 
 describe('QUESTION_BANK', () => {
-  it('has 617 total questions', () => {
-    expect(QUESTION_BANK).toHaveLength(617)
+  it('has 733 total questions', () => {
+    expect(QUESTION_BANK).toHaveLength(733)
   })
 
   it('has 500 table questions', () => {
@@ -54,5 +54,40 @@ describe('QUESTION_BANK', () => {
 
   it('tables subcategory 21-25 has 100 questions', () => {
     expect(getByCategory('tables', '21-25')).toHaveLength(100)
+  })
+
+  it('√169 = 13 (square root reverse)', () => {
+    const q = QUESTION_BANK.find(q => q.id === 'sqrt-13')
+    expect(q.answer).toBe(13)
+    expect(q.prompt).toBe('√169')
+  })
+
+  it('∛1728 = 12 (cube root reverse)', () => {
+    const q = QUESTION_BANK.find(q => q.id === 'cbrt-12')
+    expect(q.answer).toBe(12)
+    expect(q.prompt).toBe('∛1728')
+  })
+
+  it('2^? = 1024 → 10 (log reverse)', () => {
+    const q = QUESTION_BANK.find(q => q.id === 'log-2-10')
+    expect(q.answer).toBe(10)
+    expect(q.prompt).toBe('2^? = 1024')
+  })
+
+  it('14.29% = 1/7 (pct to fraction reverse)', () => {
+    const q = QUESTION_BANK.find(q => q.id === 'pct-7')
+    expect(q.answer).toBe(7)
+    expect(q.prompt).toBe('14.29% = 1/?')
+  })
+
+  it('all reverse categories use mcq format', () => {
+    const reverseCats = [
+      'square-roots', 'cube-roots', 'pct-to-frac',
+      'log-base2', 'log-base3', 'log-base4', 'log-base5',
+      'log-base6', 'log-base7', 'log-base8', 'log-base9',
+    ]
+    for (const cat of reverseCats) {
+      expect(CATEGORY_FORMAT[cat]).toBe('mcq')
+    }
   })
 })

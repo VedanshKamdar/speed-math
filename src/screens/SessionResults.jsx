@@ -268,13 +268,16 @@ function StatCell({ big, meta, sub, border }) {
 }
 
 function prettifyQid(qid) {
-  // IDs: tbl-7x14, sq-17, cb-5, pow-2-15, frac-30
   const s = String(qid)
-  if (s.startsWith('tbl-')) return s.slice(4).replace('x', ' × ')
-  if (s.startsWith('sq-')) return `${s.slice(3)}²`
-  if (s.startsWith('cb-')) return `${s.slice(3)}³`
-  if (s.startsWith('pow-')) { const [base, exp] = s.slice(4).split('-'); return `${base}^${exp}` }
+  if (s.startsWith('tbl-'))  return s.slice(4).replace('x', ' × ')
+  if (s.startsWith('sq-'))   return `${s.slice(3)}²`
+  if (s.startsWith('cb-'))   return `${s.slice(3)}³`
+  if (s.startsWith('pow-'))  { const [base, exp] = s.slice(4).split('-'); return `${base}^${exp}` }
   if (s.startsWith('frac-')) return `1 / ${s.slice(5)}`
+  if (s.startsWith('sqrt-')) { const n = parseInt(s.slice(5), 10); return `√${n * n}` }
+  if (s.startsWith('cbrt-')) { const n = parseInt(s.slice(5), 10); return `∛${n * n * n}` }
+  if (s.startsWith('log-'))  { const [base, exp] = s.slice(4).split('-'); return `${base}^? = ${Math.pow(+base, +exp)}` }
+  if (s.startsWith('pct-'))  return `% = 1/${s.slice(4)}`
   return qid
 }
 
@@ -283,6 +286,10 @@ function prettifyCat(cat) {
   if (cat === 'squares') return 'Squares'
   if (cat === 'cubes') return 'Cubes'
   if (cat === 'fractions') return 'Fractions'
+  if (cat === 'square-roots') return 'Square roots'
+  if (cat === 'cube-roots')   return 'Cube roots'
+  if (cat === 'pct-to-frac')  return '% → fraction'
   if (cat?.startsWith('powers-base')) return 'Powers · ' + cat.replace('powers-base', '')
+  if (cat?.startsWith('log-base'))    return 'Log · base ' + cat.replace('log-base', '')
   return cat
 }

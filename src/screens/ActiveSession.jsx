@@ -16,6 +16,13 @@ const CATEGORY_LABEL = {
   'powers-base6': 'Powers · 6', 'powers-base7': 'Powers · 7',
   'powers-base8': 'Powers · 8', 'powers-base9': 'Powers · 9',
   fractions: 'Fractions',
+  'square-roots': 'Square roots',
+  'cube-roots': 'Cube roots',
+  'log-base2': 'Log · base 2', 'log-base3': 'Log · base 3',
+  'log-base4': 'Log · base 4', 'log-base5': 'Log · base 5',
+  'log-base6': 'Log · base 6', 'log-base7': 'Log · base 7',
+  'log-base8': 'Log · base 8', 'log-base9': 'Log · base 9',
+  'pct-to-frac': '% → fraction',
 }
 
 export default function ActiveSession() {
