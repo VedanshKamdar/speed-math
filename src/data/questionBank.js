@@ -1,0 +1,146 @@
+function shuffle(arr) {
+  const a = [...arr]
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1))
+    ;[a[i], a[j]] = [a[j], a[i]]
+  }
+  return a
+}
+
+function generateTables() {
+  const qs = []
+  for (let a = 1; a <= 25; a++) {
+    const sub = a <= 10 ? '1-10' : a <= 20 ? '11-20' : '21-25'
+    for (let b = 1; b <= 20; b++) {
+      qs.push({
+        id: `tbl-${a}x${b}`,
+        category: 'tables',
+        subcategory: sub,
+        prompt: `${a} × ${b}`,
+        answer: a * b,
+        answerDisplay: String(a * b),
+      })
+    }
+  }
+  return qs
+}
+
+function generateSquares() {
+  return Array.from({ length: 25 }, (_, i) => {
+    const n = i + 1
+    return {
+      id: `sq-${n}`,
+      category: 'squares',
+      subcategory: null,
+      prompt: `${n}²`,
+      answer: n * n,
+      answerDisplay: String(n * n),
+    }
+  })
+}
+
+function generateCubes() {
+  return Array.from({ length: 12 }, (_, i) => {
+    const n = i + 1
+    return {
+      id: `cb-${n}`,
+      category: 'cubes',
+      subcategory: null,
+      prompt: `${n}³`,
+      answer: Math.pow(n, 3),
+      answerDisplay: String(Math.pow(n, 3)),
+    }
+  })
+}
+
+function generatePowers() {
+  const configs = [
+    { base: 2, max: 15 },
+    { base: 3, max: 8 },
+    { base: 4, max: 6 },
+    { base: 5, max: 5 },
+    { base: 6, max: 4 },
+    { base: 7, max: 4 },
+    { base: 8, max: 4 },
+    { base: 9, max: 4 },
+  ]
+  const qs = []
+  for (const { base, max } of configs) {
+    for (let exp = 1; exp <= max; exp++) {
+      qs.push({
+        id: `pow-${base}-${exp}`,
+        category: `powers-base${base}`,
+        subcategory: null,
+        prompt: `${base}^${exp}`,
+        answer: Math.pow(base, exp),
+        answerDisplay: String(Math.pow(base, exp)),
+      })
+    }
+  }
+  return qs
+}
+
+// Exact % values rounded to 2 decimal places (100/n)
+const FRACTION_PCT = {
+  1:'100%', 2:'50%', 3:'33.33%', 4:'25%', 5:'20%',
+  6:'16.67%', 7:'14.29%', 8:'12.5%', 9:'11.11%', 10:'10%',
+  11:'9.09%', 12:'8.33%', 13:'7.69%', 14:'7.14%', 15:'6.67%',
+  16:'6.25%', 17:'5.88%', 18:'5.56%', 19:'5.26%', 20:'5%',
+  21:'4.76%', 22:'4.55%', 23:'4.35%', 24:'4.17%', 25:'4%',
+  26:'3.85%', 27:'3.7%', 28:'3.57%', 29:'3.45%', 30:'3.33%',
+}
+
+function generateFractions() {
+  return Array.from({ length: 30 }, (_, i) => {
+    const n = i + 1
+    return {
+      id: `frac-${n}`,
+      category: 'fractions',
+      subcategory: null,
+      prompt: `1/${n}`,
+      answer: FRACTION_PCT[n],
+      answerDisplay: FRACTION_PCT[n],
+    }
+  })
+}
+
+export const QUESTION_BANK = [
+  ...generateTables(),
+  ...generateSquares(),
+  ...generateCubes(),
+  ...generatePowers(),
+  ...generateFractions(),
+]
+
+export const CATEGORIES = [
+  'tables', 'squares', 'cubes',
+  'powers-base2', 'powers-base3', 'powers-base4', 'powers-base5',
+  'powers-base6', 'powers-base7', 'powers-base8', 'powers-base9',
+  'fractions',
+]
+
+export const TABLE_SUBCATEGORIES = ['1-10', '11-20', '21-25']
+
+// Format per category — determines how questions are presented
+export const CATEGORY_FORMAT = {
+  tables: 'type',
+  squares: 'mcq',
+  cubes: 'mcq',
+  'powers-base2': 'flashcard',
+  'powers-base3': 'flashcard',
+  'powers-base4': 'flashcard',
+  'powers-base5': 'flashcard',
+  'powers-base6': 'flashcard',
+  'powers-base7': 'flashcard',
+  'powers-base8': 'flashcard',
+  'powers-base9': 'flashcard',
+  fractions: 'mcq',
+}
+
+export function getByCategory(category, subcategory = null) {
+  return QUESTION_BANK.filter(
+    q => q.category === category && (subcategory === null || q.subcategory === subcategory)
+  )
+}
+
+export { shuffle }
