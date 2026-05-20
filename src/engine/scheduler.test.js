@@ -92,6 +92,15 @@ describe('pickQuestions', () => {
     expect(weakPos).toBeLessThan(strongPos)
   })
 
+  it('dedupes sibling cards within a single session', () => {
+    const tablesPool = QUESTION_BANK.filter(q => q.category === 'tables')
+    const out = pickQuestions({ pool: tablesPool, cardStates: {}, nowMs: Date.now() })
+    const factKeys = out.map(q => q.factKey)
+    expect(new Set(factKeys).size).toBe(out.length)   // no duplicate factKeys
+    // 500 table prompts collapse to one direction per commutative pair.
+    expect(out.length).toBeLessThan(tablesPool.length)
+  })
+
   it('rate-limits new cards (~1 per 4 due cards)', () => {
     const states = {}
     // Mark 20 of 25 squares as already-seen (stable, high R)

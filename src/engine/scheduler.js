@@ -77,11 +77,25 @@ function urgencyOf(state, nowMs) {
 // Order a pool of questions by FSRS urgency. New cards (no state) are mixed in
 // at a controlled rate so they don't crowd out review.
 //
+// Sibling questions that share a factKey (e.g. 7×14 and 14×7) collapse to one
+// random direction per session — practising both directions across sessions,
+// never both within the same session.
+//
 // The full pool is returned in scheduled order; callers slice as needed.
 export function pickQuestions({ pool, cardStates, nowMs }) {
+  const groups = new Map()   // factKey → array of sibling questions
+  for (const q of pool) {
+    const fk = factKey(q)
+    if (!groups.has(fk)) groups.set(fk, [])
+    groups.get(fk).push(q)
+  }
+  const dedupedPool = [...groups.values()].map(siblings =>
+    siblings.length === 1 ? siblings[0] : siblings[Math.floor(Math.random() * siblings.length)]
+  )
+
   const dueList = []   // already-seen, sorted by urgency desc
   const newList = []   // unseen, randomised
-  for (const q of pool) {
+  for (const q of dedupedPool) {
     const state = cardStates[factKey(q)]
     if (state) dueList.push({ q, urgency: urgencyOf(state, nowMs) })
     else       newList.push(q)
