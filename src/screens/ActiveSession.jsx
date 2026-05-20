@@ -1,8 +1,10 @@
 import { useEffect } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { useSession } from '../hooks/useSession'
-import { saveAttempts, saveSession, getMeta, setMeta } from '../db/index'
+import { saveAttempts, saveSession, getMeta, setMeta, getCardStates, saveCardStates } from '../db/index'
 import { computeNewStreak } from '../engine/streak'
+import { applyAttempt } from '../engine/scheduler'
+import { QUESTION_BANK } from '../data/questionBank'
 import TypeAnswer from '../components/TypeAnswer'
 import MCQOptions from '../components/MCQOptions'
 import FeedbackFlash from '../components/FeedbackFlash'
@@ -50,6 +52,23 @@ export default function ActiveSession() {
       totalQuestions: state.attempts.length,
       completed: true,
     })
+
+    // Update per-fact FSRS state from this session's attempts.
+    const cardStates = await getCardStates()
+    const byId = {}
+    for (const q of QUESTION_BANK) byId[q.id] = q
+    for (const att of state.attempts) {
+      const q = byId[att.questionId]
+      if (!q) continue
+      applyAttempt(cardStates, q, {
+        correct: att.correct,
+        timeTakenMs: att.timeTakenMs,
+        format: att.format,
+        nowMs: att.timestamp ?? Date.now(),
+      })
+    }
+    await saveCardStates(cardStates)
+
     const prior = await getMeta('streak')
     const today = new Date().toISOString().slice(0, 10)
     await setMeta('streak', computeNewStreak(prior, today))

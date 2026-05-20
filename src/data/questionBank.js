@@ -12,13 +12,16 @@ function generateTables() {
   for (let a = 1; a <= 25; a++) {
     const sub = a <= 10 ? '1-10' : a <= 20 ? '11-20' : '21-25'
     for (let b = 1; b <= 20; b++) {
+      const lo = Math.min(a, b), hi = Math.max(a, b)
       qs.push({
         id: `tbl-${a}x${b}`,
+        factKey: `tbl-fact-${lo}x${hi}`,   // 7×8 and 8×7 share FSRS state
         category: 'tables',
         subcategory: sub,
         prompt: `${a} × ${b}`,
         answer: a * b,
         answerDisplay: String(a * b),
+        speedTargetMs: 1500 + 60 * (a + b),
       })
     }
   }
@@ -35,6 +38,7 @@ function generateSquares() {
       prompt: `${n}²`,
       answer: n * n,
       answerDisplay: String(n * n),
+      speedTargetMs: n <= 15 ? 1500 : 2500,
     }
   })
 }
