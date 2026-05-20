@@ -209,9 +209,25 @@ export default function SessionSetup() {
       {/* Topics */}
       <div className="flex items-baseline justify-between" style={{ marginTop: 28 }}>
         <h3 style={{ fontSize: 13, fontWeight: 600 }}>Topics</h3>
-        <span className="mono" style={{ fontSize: 12, color: 'var(--color-fg-muted)' }}>
-          {selectedCats.length} / {CATEGORIES.length}
-        </span>
+        <div className="flex items-baseline" style={{ gap: 12 }}>
+          <span className="mono" style={{ fontSize: 12, color: 'var(--color-fg-muted)' }}>
+            {selectedCats.length} / {CATEGORIES.length}
+          </span>
+          <button
+            onClick={() => setSelectedCats(selectedCats.length === CATEGORIES.length ? [] : CATEGORIES)}
+            style={{
+              background: 'transparent',
+              border: 0,
+              padding: 0,
+              color: 'var(--color-accent)',
+              fontSize: 12,
+              fontFamily: 'var(--font-mono)',
+              cursor: 'pointer',
+            }}
+          >
+            {selectedCats.length === CATEGORIES.length ? 'Clear' : 'Select all'}
+          </button>
+        </div>
       </div>
       <div className="flex flex-wrap" style={{ gap: 6, marginTop: 12 }}>
         {CATEGORIES.map((cat) => (
